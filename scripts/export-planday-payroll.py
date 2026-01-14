@@ -60,12 +60,13 @@ def write_to_csv(records, output_path: str):
     print(f"Exported {len(df)} rows to {output_path}")
 
 def get_departments(client_id: str, access_token: str):
+
     headers = {
         "Authorization": f"Bearer {access_token}",
         "X-ClientId": client_id,
     }
 
-    resp = requests.get(DEPARTMENT_URL, headers=headers, timeout=30)
+    resp = requests.get(DEPARTMENT_URL, headers=headers)
     resp.raise_for_status()
 
     body = resp.json()
