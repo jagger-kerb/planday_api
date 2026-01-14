@@ -8,7 +8,7 @@ import requests
 
 TOKEN_URL = "https://id.planday.com/connect/token"
 PAYROLL_URL = "https://openapi.planday.com/payroll/v1.0/payroll"
-
+DEPARTMENT_URL = "https://openapi.planday.com/hr/v1.0/departments"
 
 def refresh_access_token(token_url: str, client_id: str, refresh_token: str) -> str:
     payload = {
@@ -30,7 +30,6 @@ def fetch_payroll(client_id: str, access_token: str, start_date: str, end_date: 
     headers = {
         "Authorization": f"Bearer {access_token}",
         "X-ClientId": client_id,
-        "Accept": "application/json",
     }
     params = {
         "departmentIds": departments_csv,
@@ -60,12 +59,25 @@ def write_to_csv(records, output_path: str):
     df.to_csv(output_path, index=False, encoding="utf-8")
     print(f"Exported {len(df)} rows to {output_path}")
 
+def get_departments(client_id: str, access_token: str):
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "X-ClientId": client_id,
+    }
+
+    resp = requests.get(DEPARTMENT_URL, headers=headers, timeout=30)
+    resp.raise_for_status()
+
+    body = resp.json()
+
+    return body["data"]
+
 
 def main():
 
     client_id = os.environ["PLANDAY_CLIENT_ID"]
     refresh_token = os.environ["PLANDAY_REFRESH_TOKEN"]
-    departments_csv = "55297,54896,54895"
+    departments_csv = [str(d["id"]) for d in get_departments(client_id, refresh_token)]
 
 
     tz_name = os.environ.get("PLANDAY_TZ", "UTC")
@@ -89,6 +101,8 @@ def main():
     records = fetch_payroll(client_id, access_token, start, end, departments_csv)
     write_to_csv(records, out_path)
 
+
+print(get_departments())
 
 if __name__ == "__main__":
     main()
