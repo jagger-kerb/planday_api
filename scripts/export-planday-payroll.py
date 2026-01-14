@@ -77,8 +77,7 @@ def main():
 
     client_id = os.environ["PLANDAY_CLIENT_ID"]
     refresh_token = os.environ["PLANDAY_REFRESH_TOKEN"]
-    departments_csv = [str(d["id"]) for d in get_departments(client_id, refresh_token)]
-
+    departments_csv = ",".join([str(d["id"]) for d in get_departments(client_id, refresh_token)])
 
     tz_name = os.environ.get("PLANDAY_TZ", "UTC")
     if tz_name == "UTC":
@@ -102,7 +101,6 @@ def main():
     write_to_csv(records, out_path)
 
 
-print(get_departments())
 
 if __name__ == "__main__":
     main()
