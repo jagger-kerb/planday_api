@@ -30,7 +30,6 @@ jobs:
         env:
           PLANDAY_CLIENT_ID: ${{ secrets.PLANDAY_CLIENT_ID }}
           PLANDAY_REFRESH_TOKEN: ${{ secrets.PLANDAY_REFRESH_TOKEN }}
-          PLANDAY_DEPARTMENT_IDS: ${{ secrets.PLANDAY_DEPARTMENT_IDS }}
           # Set timezone if you want "yesterday" in local time:
           # PLANDAY_TZ: Europe/London
           PLANDAY_TZ: UTC
