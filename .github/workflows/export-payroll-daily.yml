@@ -1,0 +1,47 @@
+name: Export Payroll Daily
+
+on:
+  schedule:
+    - cron: "00 5 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run export
+        env:
+          PLANDAY_CLIENT_ID: ${{ secrets.PLANDAY_CLIENT_ID }}
+          PLANDAY_REFRESH_TOKEN: ${{ secrets.PLANDAY_REFRESH_TOKEN }}
+          PLANDAY_DEPARTMENT_IDS: ${{ secrets.PLANDAY_DEPARTMENT_IDS }}
+          # Set timezone if you want "yesterday" in local time:
+          # PLANDAY_TZ: Europe/London
+          PLANDAY_TZ: UTC
+          OUTPUT_DIR: exports
+        run: |
+          python scripts/export-planday-payroll.py
+
+      - name: Commit and push export
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add exports/*.csv
+          git commit -m "Daily payroll export" || echo "Nothing to commit"
+          git push
