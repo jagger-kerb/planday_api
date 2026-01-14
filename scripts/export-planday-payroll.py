@@ -65,7 +65,7 @@ def main():
 
     client_id = os.environ["PLANDAY_CLIENT_ID"]
     refresh_token = os.environ["PLANDAY_REFRESH_TOKEN"]
-    departments_csv = os.environ.get("PLANDAY_DEPARTMENT_IDS", "55297,54896,54895")
+    departments_csv = "55297,54896,54895"
 
 
     tz_name = os.environ.get("PLANDAY_TZ", "UTC")
